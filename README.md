@@ -54,3 +54,8 @@ response = {
 "/clearSchedule"
 Clears all the slots in the schedule.
 
+
+### Commands
+
+To check the status of the server.
+> sudo systemctl status smart_thermostat
