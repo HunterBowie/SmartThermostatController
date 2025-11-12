@@ -2,7 +2,9 @@
 This module contains all the flask routing functions.
 """
 
-from flask import Blueprint, render_template, jsonify
+from flask import Blueprint, render_template, jsonify, current_app
+
+from .hardware import init_hardware, read_temp, heater_on, heater_off
 
 bp = Blueprint("main", __name__)
 
@@ -13,7 +15,7 @@ def index():
 
 @bp.route("/getTemp")
 def get_temp():
-    return jsonify(temp=30.1)
+    return jsonify(temp=read_temp(current_app.testing))
 
 @bp.route("/setTargetTemp", methods=["POST"])
 def set_target_temp():
