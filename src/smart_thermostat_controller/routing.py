@@ -13,7 +13,7 @@ def index():
 
 @bp.route("/getTemp")
 def get_temp():
-    return jsonify(temp=23.1)
+    return jsonify(temp=30.1)
 
 @bp.route("/setTargetTemp", methods=["POST"])
 def set_target_temp():
