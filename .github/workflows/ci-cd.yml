@@ -43,4 +43,4 @@ jobs:
             cd /home/hunter/SmartThermostatController
             git pull
             pip install -e .
-            mkdir yep_was_here # gunicorn -b 0.0.0.0 -w 4 'src:create_app()'
+            sudo systemctl restart smart_thermostat
