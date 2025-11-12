@@ -43,4 +43,4 @@ jobs:
             cd /home/pi/SmartThermostatController
             git pull
             pip install -e .
-            gunicorn -b 0.0.0.0 -w 4 'src:create_app()'
+            mkdir yep_was_here # gunicorn -b 0.0.0.0 -w 4 'src:create_app()'
