@@ -42,5 +42,4 @@ jobs:
           script: |
             cd /home/hunter/SmartThermostatController
             git pull
-            pip install -e .
             sudo systemctl restart smart_thermostat
