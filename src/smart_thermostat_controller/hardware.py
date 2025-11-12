@@ -33,7 +33,7 @@ def init_hardware():
     os.system("modprobe w1-gpio")
     os.system("modprobe w1-therm")
 
-    global DEVICE_DIR, DEVICE_FILE
+    global DEVICE_DIR, DEVICE_FILE, heater
     
     DEVICE_DIR = glob.glob(BASE_DIR + "28*")[0]
     DEVICE_FILE = DEVICE_DIR + "/w1_slave"
