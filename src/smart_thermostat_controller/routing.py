@@ -9,7 +9,7 @@ bp = Blueprint("main", __name__)
 @bp.route("/")
 def index():
     """Return a simple homepage."""
-    return "<h1>Hello, Flask!</h1>"
+    return "<h1>Hello, Flask! But wait Its not OVER</h1>"
 
 @bp.route("/getTemp")
 def get_temp():
