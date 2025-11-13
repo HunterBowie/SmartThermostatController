@@ -23,13 +23,15 @@ class Thermostat:
         Updates schedule slots to get rid of ones already passed.
         This is called every second.
         """
-        logging.info("Updating the thermostat")
+        # logging.info("Updating the thermostat")
         with self.lock:
             temp = read_temp(self.testing)
 
             if temp > self.target + self.margin_turn_off:
+                logging.info("Heater has been turned off")
                 heater_off(self.testing)
             elif temp < self.target - self.margin_turn_on:
+                logging.info("Heater has been turned on")
                 heater_on(self.testing)
     
     def set_target(self, new_target: float):
