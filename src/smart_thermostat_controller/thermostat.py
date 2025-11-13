@@ -28,9 +28,9 @@ class Thermostat:
             temp = read_temp(self.testing)
 
             if temp > self.target + self.margin_turn_off:
-                heater_off()
+                heater_off(self.testing)
             elif temp < self.target - self.margin_turn_on:
-                heater_on()
+                heater_on(self.testing)
     
     def set_target(self, new_target: float):
         """
