@@ -25,7 +25,12 @@ class Thermostat:
         """
         logging.info("Updating the thermostat")
         with self.lock:
-            pass
+            temp = read_temp(self.testing)
+
+            if temp > self.target + self.margin_turn_off:
+                self.heater_off()
+            elif temp < self.target - self.margin_turn_on:
+                self.heater_on()
     
     def set_target(self, new_target: float):
         """
@@ -33,7 +38,8 @@ class Thermostat:
         """
         logging.info(f"Thermostat setting target to {new_target}")
         with self.lock:
-            pass
+            self.target = new_target
+            # slot details not implemented
 
     def add_schedule_slot(self, slot: dict):
         """
