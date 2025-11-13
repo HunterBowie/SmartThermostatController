@@ -2,28 +2,36 @@
 This module contains all the flask routing functions.
 """
 
-from flask import Blueprint, render_template, jsonify, current_app
+from flask import Blueprint, render_template, jsonify, current_app, request
 
 from .hardware import init_hardware, read_temp, heater_on, heater_off
+from .thermostat import Thermostat
 
 bp = Blueprint("main", __name__)
 
+def get_thermostat() -> Thermostat:
+    return current_app.config["thermostat"]
+
 @bp.route("/")
 def index():
-    """Return a simple homepage."""
     return "<h1>Hello, Flask! But wait Its not OVER</h1>"
 
-@bp.route("/getTemp")
+@bp.route("/get_temp")
 def get_temp():
-    return jsonify(temp=read_temp(current_app.testing))
+    return jsonify(temp=get_thermostat().get_temp()), 200
 
-@bp.route("/setTargetTemp", methods=["POST"])
+@bp.route("/set_target_temp", methods=["POST"])
 def set_target_temp():
-    data = request.get_json()
-    print(f"DO LOGGING: also {data}")
+    data: dict = request.get_json()
+    if not "target" in data or type(data["target"]) not in [float, int]:
+        return jsonify({"error": "Missing or incorrect target value"}), 400
 
-@bp.route("/getTargetTemp")
+    get_thermostat().set_target(data["target"])
+
+    return "", 200
+
+@bp.route("/get_target_temp")
 def get_target_temp():
-    return jsonify(temp=23.1)
+    return jsonify(target=get_thermostat().get_target()), 200
 
 

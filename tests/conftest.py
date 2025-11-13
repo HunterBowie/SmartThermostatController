@@ -1,5 +1,5 @@
 import pytest
-from smart_thermostat_controller import create_app
+from smart_thermostat_controller import create_app, stop_threads
 from flask import Flask
 from flask.testing import FlaskClient, FlaskCliRunner
 
@@ -10,7 +10,9 @@ def app() -> Flask:
         "TESTING": True,
     })
 
-    return app
+    yield app
+
+    stop_threads(app.config["threads"], app.config["stop_event"])
 
 
 @pytest.fixture()
