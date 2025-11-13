@@ -17,5 +17,6 @@ dependencies = [
     "pytest",
     "gunicorn",
     "gpiozero",
+    "RPi.GPIO; platform_machine == 'armv7l' or platform_machine == 'aarch64'"
 ]
 

@@ -59,6 +59,7 @@ class Thermostat:
         return []
 
     def get_target(self) -> float:
+        logging.info(f"Target temperature is {self.target} and returning value")
         return self.target
     
     def get_temp(self) -> float:
