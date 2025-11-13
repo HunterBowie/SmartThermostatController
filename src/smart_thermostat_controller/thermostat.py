@@ -12,7 +12,7 @@ class Thermostat:
     def __init__(self, testing: bool):
         self.lock = threading.Lock()
         self.testing = testing
-        self.target = None
+        self.target = 20
         self.margin_turn_off = 0 # turn off 0 degrees above target
         self.margin_turn_on = 2 # turn on 2 degrees below target
         self.schedule = []
