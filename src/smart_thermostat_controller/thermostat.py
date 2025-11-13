@@ -12,7 +12,7 @@ class Thermostat:
     def __init__(self, testing: bool):
         self.lock = threading.Lock()
         self.testing = testing
-        self.target = 20
+        self.target = 20.0
         self.margin_turn_off = 0 # turn off 0 degrees above target
         self.margin_turn_on = 2 # turn on 2 degrees below target
         self.schedule = []
@@ -40,6 +40,8 @@ class Thermostat:
         with self.lock:
             self.target = new_target
             # slot details not implemented
+
+        logging.info(f"Thermostat target has been set to {self.target}")
 
     def add_schedule_slot(self, slot: dict):
         """
