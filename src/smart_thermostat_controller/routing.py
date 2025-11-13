@@ -6,6 +6,7 @@ from flask import Blueprint, render_template, jsonify, current_app, request
 
 from .hardware import init_hardware, read_temp, heater_on, heater_off
 from .thermostat import Thermostat
+import logging
 
 bp = Blueprint("main", __name__)
 
@@ -26,12 +27,17 @@ def set_target_temp():
     if not "target" in data or type(data["target"]) not in [float, int]:
         return jsonify({"error": "Missing or incorrect target value"}), 400
 
-    get_thermostat().set_target(data["target"])
+    t = get_thermostat()
+    logging.info(f"Setting target, id of t is {id(t)}")
+    
+    t.set_target(data["target"])
 
     return "", 200
 
 @bp.route("/get_target_temp")
 def get_target_temp():
-    return jsonify(target=get_thermostat().get_target()), 200
+    t = get_thermostat()
+    logging.info(f"Getting target, id of t is {id(t)}")
+    return jsonify(target=t.get_target()), 200
 
 
