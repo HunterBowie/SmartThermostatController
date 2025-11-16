@@ -49,6 +49,8 @@ class Thermostat:
         if self.target is None:
             return
         
+        logging.info(f"Heater is {is_heater_on(self.testing)}")
+        
         if temp > self.target + self.margin_turn_off:
             if is_heater_on(self.testing):
                 logging.info("Heater has been turned off")

@@ -86,7 +86,7 @@ def turn_heater_off(testing: bool):
     heater.off()
 
 
-def is_heater_on(testing: bool):
+def is_heater_on(testing: bool) -> bool:
     """Returns true if the heater is on. Throws a HardwareUnintializedExeption if init_hardware is not called."""
 
     if testing: return
@@ -94,4 +94,4 @@ def is_heater_on(testing: bool):
     if not heater:
         raise HardwareUnintializedExeption("The hardware has not been initialized.")
     
-    return not heater.active_high
+    return heater.is_active
