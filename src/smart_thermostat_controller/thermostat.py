@@ -16,6 +16,7 @@ class Thermostat:
         self.margin_turn_off = 0 # turn off 0 degrees above target
         self.margin_turn_on = 2 # turn on 2 degrees below target
         self.schedule = []
+        logging.info("Creating a thermostat object.")
     
     def update(self):
         """
@@ -24,15 +25,14 @@ class Thermostat:
         This is called every second.
         """
         # logging.info("Updating the thermostat")
-        with self.lock:
-            temp = read_temp(self.testing)
+        temp = read_temp(self.testing)
 
-            if temp > self.target + self.margin_turn_off:
-                logging.info("Heater has been turned off")
-                heater_off(self.testing)
-            elif temp < self.target - self.margin_turn_on:
-                logging.info("Heater has been turned on")
-                heater_on(self.testing)
+        if temp > self.target + self.margin_turn_off:
+            logging.info("Heater has been turned off")
+            heater_off(self.testing)
+        elif temp < self.target - self.margin_turn_on:
+            logging.info("Heater has been turned on")
+            heater_on(self.testing)
     
     def set_target(self, new_target: float):
         """
@@ -51,8 +51,6 @@ class Thermostat:
         Throws a ScheduleException if it conflicts with another slot.
         """
         print("ADDING SCHEDULE SLOT")
-        with self.lock:
-            pass
     
     def get_schedule(self) -> list[dict]:
         print("GETTING SCHEDULE")
