@@ -98,7 +98,7 @@ class Thermostat:
                 if smaller["end_time"] <= larger["end_time"] and smaller["end_time"] >= larger["start_time"]:
                     raise ValueError("Smaller end time is within other time slot")
             
-            self.schedule.append(slot)
+            self.schedule.append(new_slot)
     
     def clear_schedule(self):
         with self.lock:

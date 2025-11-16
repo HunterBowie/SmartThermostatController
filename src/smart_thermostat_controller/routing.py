@@ -25,7 +25,7 @@ def get_temp():
 @bp.route("/set_target_temp", methods=["POST"])
 def set_target_temp():
     data: dict = request.get_json()
-    if not "target" in data or type(data["target"]) not in [float, int]:
+    if not "target" in data or type(data["target"]) not in [float, int, None]:
         return jsonify({"error": "Missing or incorrect target value"}), 400
 
     t = get_thermostat()
