@@ -65,7 +65,7 @@ def read_temp(testing: bool) -> float:
         temp_c = float(temp_string) / 1000.0
         return round(temp_c, 1)  
 
-def heater_on(testing: bool):
+def turn_heater_on(testing: bool):
     """Turns the heater on. Throws a HardwareUnintializedExeption if init_hardware is not called."""
 
     if testing: return
@@ -75,7 +75,7 @@ def heater_on(testing: bool):
     
     heater.on()
 
-def heater_off(testing: bool):
+def turn_heater_off(testing: bool):
     """Turns the heater off. Throws a HardwareUnintializedExeption if init_hardware is not called."""
 
     if testing: return
@@ -84,3 +84,14 @@ def heater_off(testing: bool):
         raise HardwareUnintializedExeption("The hardware has not been initialized.")
     
     heater.off()
+
+
+def is_heater_on(testing: bool):
+    """Returns true if the heater is on. Throws a HardwareUnintializedExeption if init_hardware is not called."""
+
+    if testing: return
+
+    if not heater:
+        raise HardwareUnintializedExeption("The hardware has not been initialized.")
+    
+    return heater.active_high
