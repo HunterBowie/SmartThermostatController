@@ -50,7 +50,7 @@ class Thermostat:
             if is_heater_on(self.testing):
                 logging.info("Heater has been turned off")
                 turn_heater_off(self.testing)
-                return
+            return
         
         if temp > self.target + self.margin_turn_off:
             if is_heater_on(self.testing):
