@@ -26,12 +26,12 @@ class Thermostat:
         Updates schedule slots to get rid of ones already passed.
         This is called every second.
         """
-        # logging.info("Updating the thermostat")
         temp = read_temp(self.testing)
 
         if temp > 29:
             logging.info("Heater has been turned off")
             turn_heater_off(self.testing)
+            return
         
         if self.current_slot:
             if datetime.now() > self.current_slot["end_time"]:
@@ -47,9 +47,10 @@ class Thermostat:
                     break
 
         if self.target is None:
-            return
-        
-        logging.info(f"Heater is {is_heater_on(self.testing)}")
+            if is_heater_on(self.testing):
+                logging.info("Heater has been turned off")
+                turn_heater_off(self.testing)
+                return
         
         if temp > self.target + self.margin_turn_off:
             if is_heater_on(self.testing):
