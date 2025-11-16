@@ -94,4 +94,4 @@ def is_heater_on(testing: bool):
     if not heater:
         raise HardwareUnintializedExeption("The hardware has not been initialized.")
     
-    return heater.active_high
+    return not heater.active_high
