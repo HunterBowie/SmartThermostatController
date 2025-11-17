@@ -2,7 +2,7 @@
 This module contains all the flask routing functions.
 """
 
-from flask import Blueprint, render_template, jsonify, current_app, request
+from flask import Blueprint, jsonify, current_app, request
 
 from .hardware import init_hardware, read_temp
 from .thermostat import Thermostat
@@ -14,13 +14,14 @@ bp = Blueprint("main", __name__)
 def get_thermostat() -> Thermostat:
     return current_app.config["thermostat"]
 
-@bp.route("/")
-def index():
-    return "<h1>Hello, Flask! But wait Its not OVER</h1>"
-
 @bp.route("/get_temp")
 def get_temp():
     return jsonify(temp=get_thermostat().get_temp()), 200
+
+@bp.route("/get_target_temp")
+def get_target_temp():
+    t = get_thermostat()
+    return jsonify(target=t.get_target()), 200
 
 @bp.route("/set_target_temp", methods=["POST"])
 def set_target_temp():
@@ -29,22 +30,15 @@ def set_target_temp():
         return jsonify({"error": "Missing or incorrect target value"}), 400
 
     t = get_thermostat()
-    logging.info(f"Setting target, id of t is {id(t)}")
     
     t.set_target(data["target"])
 
     return "", 200
 
-@bp.route("/get_target_temp")
-def get_target_temp():
-    t = get_thermostat()
-    logging.info(f"Getting target, id of t is {id(t)}")
-    return jsonify(target=t.get_target()), 200
 
 @bp.route("/add_schedule_slot", methods=["POST"])
 def add_schedule_slot():
     t = get_thermostat()
-    logging.info("Adding schedule slot")
     data: dict = request.get_json()
 
     try:
@@ -57,21 +51,20 @@ def add_schedule_slot():
         t.add_schedule_slot(slot)
         return "", 200
     
-    except (KeyError, ValueError):
+    except (KeyError, ValueError) as error:
         logging.warning("Bad request made for schedule slot")
-        return "", 400
+        return jsonify({"error": str(error)}), 400
 
 @bp.route("/clear_schedule", methods=["POST"])
 def clear_schedule():
     t = get_thermostat()
-    logging.info("Clearing schedule")
     t.clear_schedule()
+    return "", 200
 
 
 @bp.route("/get_schedule")
 def get_schedule():
     t = get_thermostat()
-    logging.info("Getting schedule")
     schedule = t.get_schedule()
 
     json_schedule = []

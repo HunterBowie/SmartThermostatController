@@ -18,7 +18,6 @@ class Thermostat:
         self.margin_turn_on = 2 # turn on 2 degrees below target
         self.current_slot = None
         self.schedule = []
-        logging.info("Creating a thermostat object.")
     
     def update(self):
         """
@@ -29,7 +28,7 @@ class Thermostat:
         temp = read_temp(self.testing)
 
         if temp > 29:
-            logging.info("Heater has been turned off")
+            logging.info("Thermostat: heater has been turned off")
             turn_heater_off(self.testing)
             return
         
@@ -48,40 +47,39 @@ class Thermostat:
 
         if self.target is None:
             if is_heater_on(self.testing):
-                logging.info("Heater has been turned off")
+                logging.info("Thermostat: heater has been turned off")
                 turn_heater_off(self.testing)
             return
         
         if temp > self.target + self.margin_turn_off:
             if is_heater_on(self.testing):
-                logging.info("Heater has been turned off")
+                logging.info("Thermostat: heater has been turned off")
                 turn_heater_off(self.testing)
         elif temp < self.target - self.margin_turn_on:
             if not is_heater_on(self.testing):
-                logging.info("Heater has been turned on")
+                logging.info("Thermostat: heater has been turned on")
                 turn_heater_on(self.testing)
     
     def set_target(self, new_target: float):
         """
         Sets the new target. If there is a schedule slot is currently running, that slot is deleted.
         """
-        logging.info(f"Thermostat setting target to {new_target}")
         with self.lock:
+            logging.info(f"Thermostat: setting target to {new_target}")
             self.target = new_target
 
             if self.current_slot:
                 self.current_slot = None
 
-        logging.info(f"Thermostat target has been set to {self.target}")
 
     def add_schedule_slot(self, new_slot: dict):
         """
         Adds new slot to the schedule. 
         Throws a ValueError if it conflicts with another slot.
         """
-        print("ADDING SCHEDULE SLOT")
 
         with self.lock:
+            logging.info(f"Thermostat: adding to schedule slot={new_slot}")
 
             new_duration = (new_slot["end_time"] - new_slot["start_time"]).total_seconds()
 
@@ -103,17 +101,19 @@ class Thermostat:
     
     def clear_schedule(self):
         with self.lock:
+            logging.info("Thermostat: clearing the schedule")
             self.schedule.clear()
 
     def get_schedule(self) -> list[dict]:
+        logging.info("Thermostat: getting the schedule")
         return self.schedule
 
     def get_target(self) -> float:
-        logging.info(f"Target temperature is {self.target} and returning value")
+        logging.info(f"Thermostat: getting target={self.target}")
         return self.target
     
     def get_temp(self) -> float:
         temp = read_temp(self.testing)
-        logging.info(f"A temperature of {temp}°C has been observed")
+        logging.info(f"Thermostat: getting temperature temp={temp}°C")
         return temp
     
