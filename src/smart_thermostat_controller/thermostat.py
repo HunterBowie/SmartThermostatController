@@ -27,7 +27,7 @@ class Thermostat:
         """
         temp = read_temp(self.testing)
 
-        if temp > 29:
+        if temp > 32:
             logging.info("Thermostat: heater has been turned off")
             turn_heater_off(self.testing)
             return
