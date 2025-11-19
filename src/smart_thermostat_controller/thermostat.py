@@ -19,6 +19,9 @@ class Thermostat:
         self.current_slot = None
         self.schedule = []
     
+    def shutting_down(self):
+        turn_heater_off(self.testing)
+    
     def update(self):
         """
         Updates the heater in response to sensor and target temperature and schedule.

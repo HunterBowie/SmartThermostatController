@@ -58,6 +58,7 @@ def create_app(testing=False) -> Flask:
         while not stop_event.is_set():
             thermostat.update()
             time.sleep(1)
+        thermostat.shutting_down()
         logging.info("Update loop for thermostat has ended")
 
     logging.info("Update loop thread for thermostat created")
