@@ -28,7 +28,7 @@ def get_target_temp():
 @bp.route("/set_target_temp", methods=["POST"])
 def set_target_temp():
     data: dict = request.get_json()
-    if not "target" in data or type(data["target"]) not in [float, int, None]:
+    if not "target" in data or (data["target"] is not None and type(data["target"]) not in [float, int]):
         return jsonify({"error": "Missing or incorrect target value"}), 400
 
     t = get_thermostat()
@@ -62,4 +62,7 @@ def clear_schedule():
 @bp.route("/get_next_event")
 def get_next_event():
     t = get_thermostat()
-    return jsonify(event=t.get_next_event().json()), 200
+    event = t.get_next_event()
+    if event is None:
+        return jsonify(event=None), 200
+    return jsonify(event=event.json()), 200

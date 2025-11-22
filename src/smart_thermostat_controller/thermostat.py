@@ -92,6 +92,8 @@ class Thermostat:
 
     def get_next_event(self) -> Event:
         logging.info("Thermostat: getting the schedule")
+        if self.schedule.size() == 0:
+            return None
         return self.schedule.peek()
 
     def get_target(self) -> float:

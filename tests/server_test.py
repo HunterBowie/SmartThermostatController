@@ -5,8 +5,8 @@ import pytest
 @pytest.fixture()
 def event() -> dict:
     return {
-        "start_time": "2025-12-16T09:49:00",
-        "end_time": "2025-12-16T09:50:00",
+        "start_time": "2025-12-16 09:49:00",
+        "end_time": "2025-12-16 09:50:00",
         "target": 25.0
     }
 
@@ -31,7 +31,12 @@ def test_clear_schedule_ok(client: FlaskClient):
     assert response.status_code == 200
 
 def test_get_next_event_ok(client: FlaskClient, event: dict):
+    response = client.get("/get_next_event")
+    assert response.status_code == 200
+    assert response.json == {"event": None}
     client.post("/schedule_event", json=event)
     response = client.get("/get_next_event")
     assert response.status_code == 200
+    assert response.json == {"event": event}
+
 
