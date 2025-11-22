@@ -8,18 +8,21 @@ import threading
 import logging
 from .hardware import read_temp, turn_heater_off, turn_heater_on, is_heater_on
 from datetime import datetime
+from .schedule import Event, Schedule
 
 class Thermostat:
+    """Repersents the smart thermostat controller."""
+
     def __init__(self, testing: bool):
         self.lock = threading.Lock()
         self.testing = testing
-        self.target = None
+        self.target: float = None
         self.margin_turn_off = 0 # turn off 0 degrees above target
         self.margin_turn_on = 2 # turn on 2 degrees below target
-        self.current_slot = None
-        self.schedule = []
+        self.current_slot: Event = None
+        self.schedule = Schedule()
     
-    def shutting_down(self):
+    def shut_down(self):
         turn_heater_off(self.testing)
     
     def update(self):
@@ -35,18 +38,15 @@ class Thermostat:
             turn_heater_off(self.testing)
             return
         
-        if self.current_slot:
-            if datetime.now() > self.current_slot["end_time"]:
+        if self.current_slot is not None:
+            if datetime.now() > self.current_slot.end_time:
                 self.current_slot = None
                 self.target = None
 
         if not self.current_slot:
-            for slot in self.schedule:
-                if datetime.now() >= slot["start_time"]:
-                    self.current_slot = slot
-                    self.schedule.remove(slot)
-                    self.target = slot["target"]
-                    break
+            if self.schedule.size() > 0 and datetime.now() >= self.schedule.peek().start_time:
+                self.current_slot = self.schedule.pop()
+                self.target = self.current_slot.target
 
         if self.target is None:
             if is_heater_on(self.testing):
@@ -71,45 +71,28 @@ class Thermostat:
             logging.info(f"Thermostat: setting target to {new_target}")
             self.target = new_target
 
-            if self.current_slot:
+            if self.current_slot is not None:
                 self.current_slot = None
 
 
-    def add_schedule_slot(self, new_slot: dict):
+    def schedule_event(self, event: Event):
         """
         Adds new slot to the schedule. 
-        Throws a ValueError if it conflicts with another slot.
         """
 
         with self.lock:
-            logging.info(f"Thermostat: adding to schedule slot={new_slot}")
+            logging.info(f"Thermostat: adding to schedule event={event}")
 
-            new_duration = (new_slot["end_time"] - new_slot["start_time"]).total_seconds()
-
-            for slot in self.schedule:
-                duration = (slot["end_time"] - slot["start_time"]).total_seconds()
-
-                smaller = slot
-                larger = new_duration
-                if duration > new_duration:
-                    larger = slot
-                    smaller = new_slot
-                
-                if smaller["start_time"] <= larger["end_time"] and smaller["start_time"] >= larger["start_time"]:
-                    raise ValueError("Smaller start time is within other time slot")
-                if smaller["end_time"] <= larger["end_time"] and smaller["end_time"] >= larger["start_time"]:
-                    raise ValueError("Smaller end time is within other time slot")
-            
-            self.schedule.append(new_slot)
+            self.schedule.insert(event)
     
     def clear_schedule(self):
         with self.lock:
             logging.info("Thermostat: clearing the schedule")
-            self.schedule.clear()
+            self.schedule = Schedule()
 
-    def get_schedule(self) -> list[dict]:
+    def get_next_event(self) -> Event:
         logging.info("Thermostat: getting the schedule")
-        return self.schedule
+        return self.schedule.peek()
 
     def get_target(self) -> float:
         logging.info(f"Thermostat: getting target={self.target}")

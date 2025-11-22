@@ -2,11 +2,6 @@ from flask.testing import FlaskClient
 import time
 
 
-def test_get_schedule_empty(client: FlaskClient):
-    response = client.get("/get_schedule")
-    assert response.status_code == 200
-    assert response.json["schedule"] == []
-
 def test_get_temp_testing_value(client: FlaskClient):
     response = client.get("/get_temp")
     assert response.json["temp"] == 25.0

@@ -4,6 +4,8 @@ This module contains all the flask routing functions.
 
 from flask import Blueprint, jsonify, current_app, request
 
+from smart_thermostat_controller.schedule import Event
+
 from .hardware import init_hardware, read_temp
 from .thermostat import Thermostat
 import logging
@@ -36,24 +38,19 @@ def set_target_temp():
     return "", 200
 
 
-@bp.route("/add_schedule_slot", methods=["POST"])
-def add_schedule_slot():
+@bp.route("/schedule_event", methods=["POST"])
+def schedule_event():
     t = get_thermostat()
     data: dict = request.get_json()
 
-    try:
-        slot = {
-            "start_time": datetime.fromisoformat(data["start_time"]),
-            "end_time": datetime.fromisoformat(data["end_time"]),
-            "target": round(float(data["target"]), 1)
-        }
+    event = Event(
+        start_time=datetime.fromisoformat(data["start_time"]),
+        end_time=datetime.fromisoformat(data["end_time"]),
+        target=round(float(data["target"]), 1)
+    )
 
-        t.add_schedule_slot(slot)
-        return "", 200
-    
-    except (KeyError, ValueError) as error:
-        logging.warning("Bad request made for schedule slot")
-        return jsonify({"error": str(error)}), 400
+    t.schedule_event(event)
+    return "", 200
 
 @bp.route("/clear_schedule", methods=["POST"])
 def clear_schedule():
@@ -62,17 +59,7 @@ def clear_schedule():
     return "", 200
 
 
-@bp.route("/get_schedule")
-def get_schedule():
+@bp.route("/get_next_event")
+def get_next_event():
     t = get_thermostat()
-    schedule = t.get_schedule()
-
-    json_schedule = []
-    for slot in schedule:
-        json_schedule.append({
-            "target": slot["target"],
-            "start_time": datetime.isoformat(slot["start_time"]),
-            "end_time": datetime.isoformat(slot["end_time"]),
-        })
-
-    return jsonify(schedule=json_schedule), 200
+    return jsonify(event=t.get_next_event().json()), 200
